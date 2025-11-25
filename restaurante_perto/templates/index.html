@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Foodsy</title>
+
+    <!-- FONTES GOOGLE -->
+    <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <script defer src="{{ url_for('static', filename='app.js') }}"></script>
+</head>
+
+<body>
+
+    <header>
+        <h1 class="logo">Foodsy</h1>
+    </header>
+
+    <input id="query" type="text" placeholder="O que quero comer: pizza, japonês, hambúrguer...">
+
+    <button onclick="buscar()">Buscar</button>
+
+    <div id="resultado"></div>
+
+    <!-- POPUP BOTTOM-SHEET -->
+    <div id="popup" class="popup hidden">
+        <div class="popup-content">
+            <h2>Ir para o restaurante?</h2>
+
+            <div class="popup-buttons">
+                <button id="btnSim" class="popup-btn yes">Sim</button>
+                <button id="btnNao" class="popup-btn no">Não</button>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>

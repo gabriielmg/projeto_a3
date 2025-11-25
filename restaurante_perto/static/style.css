@@ -1,0 +1,212 @@
+/* ======== ESTILO GERAL ======== */
+body {
+    font-family: 'Poppins', sans-serif;
+    background: #ffffff;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+/* ======== CABEÇALHO ESTILO IFOOD ======== */
+
+header {
+    width: 100%;
+    background: #EA1D2C;
+    padding: 28px 0;
+    text-align: center;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+}
+
+/* LOGO GRANDE E MARCANTE */
+header h1.logo {
+    font-family: 'Baloo 2', cursive;
+    font-size: 72px;           /* TAMANHO MAIOR */
+    line-height: 72px;         /* ALTURA AJUSTADA */
+    color: #ffffff;
+    margin: 0;                 /* REMOVE A BORDA EXTRA */
+    padding: 0;
+    letter-spacing: 1px;       /* Dá mais presença */
+    font-weight: 700;          /* Bem forte */
+    text-shadow: 0 4px 12px rgba(0,0,0,0.20); /* Destaque premium */
+}
+
+/* Versão mobile */
+
+
+/* ======== INPUT E BOTÃO ======== */
+input[type="text"] {
+    width: 90%;
+    max-width: 800px;
+    padding: 14px;
+    margin-top: 25px;
+    font-size: 16px;
+    border: 1px solid #ddd;
+    border-radius: 12px;
+    background: #fafafa;
+    transition: 0.2s;
+}
+
+input[type="text"]:focus {
+    border-color: #EA1D2C;
+    box-shadow: 0 0 6px rgba(234,29,44,0.4);
+}
+
+button {
+    width: 90%;
+    max-width: 800px;
+    padding: 15px;
+    margin-top: 12px;
+    background: #EA1D2C;
+    border: none;
+    color: white;
+    font-size: 18px;
+    border-radius: 14px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: 0.2s;
+}
+
+button:hover {
+    background: #c41623;
+}
+
+/* ======== ÁREA DE RESULTADOS ======== */
+#resultado {
+    width: 95%;
+    max-width: 900px;
+    margin-top: 25px;
+    padding-bottom: 50px;
+}
+
+/* ======== CARD ESTILO IFOOD ======== */
+.card {
+    background: white;
+    margin-bottom: 18px;
+    padding: 16px;
+    border-radius: 16px;
+    box-shadow: 0 4px 14px rgba(0,0,0,0.08);
+    border-left: 6px solid #EA1D2C;
+    transition: 0.25s ease;
+}
+
+.card:hover {
+    transform: scale(1.02);
+}
+
+.card h3 {
+    margin: 0;
+    font-size: 20px;
+    color: #222;
+    font-weight: bold;
+}
+
+.card p {
+    margin: 6px 0;
+    color: #555;
+    font-size: 15px;
+}
+
+.card img {
+    margin-top: 10px;
+    border-radius: 12px;
+    width: 100%;
+    max-height: 180px;
+    object-fit: cover;
+}
+
+/* ======== MOBILE ======== */
+@media (max-width: 480px) {
+    header h1.logo {
+        font-size: 56px;
+        line-height: 56px;
+    }
+
+    button {
+        font-size: 16px;
+    }
+}
+/* ======== LOADING ANIMATION ======== */
+.loading-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 0;
+}
+
+.spinner {
+    width: 55px;
+    height: 55px;
+    border: 6px solid #f3f3f3;
+    border-top: 6px solid #ff2e2e; /* cor iFood */
+    border-radius: 50%;
+    animation: spin 0.9s linear infinite;
+}
+
+.loading-text {
+    margin-top: 12px;
+    font-size: 18px;
+    color: #444;
+    font-weight: bold;
+    animation: pulse 1.4s infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+@keyframes pulse {
+    0% { opacity: 0.4; }
+    50% { opacity: 1; }
+    100% { opacity: 0.4; }
+}
+/* ================= POPUP BOTTOM SHEET ================= */
+
+.popup {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: -100%;
+    background: #fff;
+    padding: 25px;
+    border-radius: 20px 20px 0 0;
+    box-shadow: 0 -4px 15px rgba(0,0,0,0.2);
+    transition: bottom 0.35s ease;
+    z-index: 9999;
+}
+
+.popup.show {
+    bottom: 0;
+}
+
+.popup h2 {
+    font-size: 22px;
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.popup-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+}
+
+.popup-buttons button {
+    padding: 12px 20px;
+    font-size: 16px;
+    border-radius: 10px;
+    cursor: pointer;
+    border: none;
+    font-weight: bold;
+}
+
+#btnSim {
+    background: #EA1D2C;
+    color: white;
+}
+
+#btnNao {
+    background: #ccc;
+}
