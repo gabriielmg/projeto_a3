@@ -1,8 +1,37 @@
-async function buscar() {
+// ---------------------------
+// MENU HAMBÚRGUER → FILTROS
+// ---------------------------
+const icon = document.getElementById("menuIcon");
+const popupFiltros = document.getElementById("popupFiltros");
+
+// Abrir popup
+icon.onclick = () => {
+    popupFiltros.classList.add("show");
+};
+
+// Fechar popup
+function fecharFiltros() {
+    popupFiltros.classList.remove("show");
+}
+
+// FECHAR POPUP AO CLICAR FORA
+document.addEventListener("click", function (event) {
+    // Se o popup não estiver aberto → não faz nada
+    if (!popupFiltros.classList.contains("show")) return;
+
+    // Se clicou fora do conteúdo e fora do ícone do menu
+    if (!event.target.closest(".popup-content") && event.target !== icon) {
+        fecharFiltros();
+    }
+});
+
+// --------------------------
+// FUNÇÃO PRINCIPAL DE BUSCA
+// --------------------------
+async function buscar(filtro = null) {
     const query = document.getElementById("query").value.trim();
     const resultado = document.getElementById("resultado");
 
-    // LOADING ANIMADO
     resultado.innerHTML = `
         <div class="loading-container">
             <div class="spinner"></div>
@@ -10,19 +39,13 @@ async function buscar() {
         </div>
     `;
 
-    if (!query) {
-        resultado.innerHTML = "Digite algo para buscar.";
-        return;
-    }
-
-    // pegar localização do usuário
     navigator.geolocation.getCurrentPosition(async (pos) => {
 
         const lat = pos.coords.latitude;
         const lng = pos.coords.longitude;
 
         const payload = {
-            query: query,
+            query,
             latitude: lat,
             longitude: lng,
             radius_km: 3,
@@ -44,12 +67,26 @@ async function buscar() {
             return;
         }
 
+        let items = data.items;
+
+        // ⭐ Melhor avaliados
+        if (filtro === "avaliados") {
+            items.sort((a, b) => (b.rating || 0) - (a.rating || 0));
+        }
+
+        // 🔥 Mais populares
+        if (filtro === "reviews") {
+            items.sort((a, b) => (b.reviews || 0) - (a.reviews || 0));
+        }
+
+        // Fecha o popup após aplicar o filtro
+        fecharFiltros();
+
         resultado.innerHTML = "";
 
-        data.items.forEach(item => {
+        items.forEach(item => {
             resultado.innerHTML += `
                 <div class="card" onclick="abrirPopup(${item.lat}, ${item.lng})">
-
                     <div class="card-img">
                         ${item.photo_url 
                             ? `<img src="${item.photo_url}">`
@@ -57,13 +94,11 @@ async function buscar() {
                         }
                     </div>
 
-                    <div class="card-info">
-                        <h3>${item.name}</h3>
-                        <p>${item.address}</p>
-                        <p>⭐ ${item.rating || "?"} (${item.reviews || 0} avaliações)</p>
-                        <p>${item.distance_km} km de distância</p>
-                    </div>
+                    <h3>${item.name}</h3>
+                    <p>${item.address}</p>
 
+                    <p>⭐ ${item.rating || "?"} (${item.reviews || 0} avaliações)</p>
+                    <p>${item.distance_km} km de distância</p>
                 </div>
             `;
         });
@@ -73,36 +108,38 @@ async function buscar() {
     });
 }
 
+// BOTÕES DOS FILTROS
+function buscarAvaliados() {
+    buscar("avaliados");
+}
 
-// ========================================================
-//              POPUP + REDIRECIONAMENTO MAPS
-// ========================================================
+function buscarPopulares() {
+    buscar("reviews");
+}
 
+// ------------------------------------
+// POPUP DE CONFIRMAÇÃO
+// ------------------------------------
 let destinoLat = null;
 let destinoLng = null;
 
-// abrir popup
 function abrirPopup(lat, lng) {
-
-    // FECHA QUALQUER POPUP ABERTO ANTES DE ABRIR OUTRO
-    const popup = document.getElementById("popup");
+    const popup = document.getElementById("popupConfirmar");
     popup.classList.remove("show");
 
     setTimeout(() => {
         destinoLat = lat;
         destinoLng = lng;
         popup.classList.add("show");
-    }, 150); // pequeno delay para garantir animação suave
+    }, 150);
 }
 
-// botão SIM → abre o Maps
 document.getElementById("btnSim").onclick = function () {
     const url = `https://www.google.com/maps/dir/?api=1&destination=${destinoLat},${destinoLng}`;
     window.open(url, "_blank");
-    document.getElementById("popup").classList.remove("show");
+    document.getElementById("popupConfirmar").classList.remove("show");
 };
 
-// botão NÃO → apenas fecha
 document.getElementById("btnNao").onclick = function () {
-    document.getElementById("popup").classList.remove("show");
+    document.getElementById("popupConfirmar").classList.remove("show");
 };

@@ -6,36 +6,62 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Foodsy</title>
 
-    <!-- FONTES GOOGLE -->
     <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
-
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
     <script defer src="{{ url_for('static', filename='app.js') }}"></script>
 </head>
 
 <body>
 
-    <header>
-        <h1 class="logo">Foodsy</h1>
-    </header>
+<header>
+    <div id="menuIcon" class="menu-icon">☰</div>
 
-    <input id="query" type="text" placeholder="O que quero comer: pizza, japonês, hambúrguer...">
+    <img src="{{ url_for('static', filename='images/logo.png') }}" 
+         class="logo" 
+         alt="Foodsy Logo">
+</header>
 
-    <button onclick="buscar()">Buscar</button>
+<!-- CAMPO DE BUSCA -->
+<div class="search-container">
+    <input type="text" id="query" placeholder="Buscar restaurante, comida...">
+    <button class="btn-buscar" onclick="buscar()">Buscar</button>
+</div>
 
-    <div id="resultado"></div>
+<!-- RESULTADOS -->
+<div id="resultado" class="resultado"></div>
 
-    <!-- POPUP BOTTOM-SHEET -->
-    <div id="popup" class="popup hidden">
-        <div class="popup-content">
-            <h2>Ir para o restaurante?</h2>
+<!-- POPUP DE FILTROS -->
+<div id="popupFiltros" class="popup">
+    <div class="popup-content filtros-container">
 
-            <div class="popup-buttons">
-                <button id="btnSim" class="popup-btn yes">Sim</button>
-                <button id="btnNao" class="popup-btn no">Não</button>
-            </div>
+        <h2 class="filtros-title">Filtros</h2>
+
+        <button class="filtro-btn filtro-star" onclick="buscarAvaliados()">
+            ⭐ Melhor Avaliados
+        </button>
+
+        <button class="filtro-btn filtro-fire" onclick="buscarPopulares()">
+            🔥 Mais Populares
+        </button>
+
+        <button class="filtro-btn filtro-close" onclick="fecharFiltros()">
+            ❌ Fechar
+        </button>
+
+    </div>
+</div>
+
+<!-- POPUP CONFIRMAR NAVEGAÇÃO -->
+<div id="popupConfirmar" class="popup">
+    <div class="popup-content">
+        <h2>Ir para o restaurante?</h2>
+
+        <div class="popup-buttons">
+            <button id="btnSim" class="popup-btn yes">Sim</button>
+            <button id="btnNao" class="popup-btn no">Não</button>
         </div>
     </div>
+</div>
 
 </body>
 </html>

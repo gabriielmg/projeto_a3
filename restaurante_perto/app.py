@@ -16,11 +16,7 @@ if not GOOGLE_API_KEY:
 
 # --------- Utilidades ---------
 def haversine_km(lat1, lon1, lat2, lon2):
-    """
-    Calcula a distância entre dois pontos (lat/lon) em quilômetros.
-    Fórmula de Haversine.
-    """
-    R = 6371.0  # raio da Terra em km
+    R = 6371.0
     p1 = math.radians(lat1)
     p2 = math.radians(lat2)
     dphi = math.radians(lat2 - lat1)
@@ -32,9 +28,6 @@ def haversine_km(lat1, lon1, lat2, lon2):
 
 
 def to_price_signs(price_level):
-    """
-    Converte o nível de preço (0-4) em símbolos de cifrão.
-    """
     try:
         lvl = int(price_level)
         if lvl <= 0:
@@ -45,9 +38,6 @@ def to_price_signs(price_level):
 
 
 def fetch_places_nearby(lat, lng, query, radius=3000, max_pages=2, open_now=None):
-    """
-    Busca restaurantes próximos usando Google Places Nearby Search.
-    """
     base_url = "https://maps.googleapis.com/maps/api/place/nearbysearch/json"
     results = []
     next_token = None
@@ -134,7 +124,8 @@ def transform_place(place, origin_lat, origin_lng):
     }
 
 
-# --------- Rotas ---------
+# ---------------- ROTAS ----------------
+
 @app.route("/")
 def home():
     return render_template("index.html")
@@ -143,18 +134,21 @@ def home():
 @app.route("/api/search", methods=["POST"])
 def api_search():
     data = request.get_json(silent=True) or {}
+
     query = (data.get("query") or "").strip()
     lat = data.get("latitude")
     lng = data.get("longitude")
     radius_km = float(data.get("radius_km") or 3.0)
-    min_rating = float(data.get("min_rating") or 4.0)
-    min_reviews = int(data.get("min_reviews") or 20)
     open_now = bool(data.get("open_now")) if data.get("open_now") is not None else None
+
+    # 🔥 NOVO PARÂMETRO
+    sort_by = data.get("sort_by", "distance").strip().lower()
 
     if not query:
         return jsonify({"error": "O campo 'query' é obrigatório."}), 400
     if lat is None or lng is None:
         return jsonify({"error": "Latitude e longitude são obrigatórios."}), 400
+
     try:
         lat = float(lat)
         lng = float(lng)
@@ -173,21 +167,20 @@ def api_search():
     items = [transform_place(p, lat, lng) for p in raw_places]
 
     def passes_filters(item):
-        r = item.get("rating") or 0
-        rv = item.get("reviews") or 0
         if open_now and item.get("open_now") is False:
             return False
-        return r >= min_rating and rv >= min_reviews
+        return True
 
     filtered = list(filter(passes_filters, items))
 
-    filtered.sort(
-        key=lambda x: (
-            -float(x.get("rating") or 0),
-            -int(x.get("reviews") or 0),
-            float(x.get("distance_km") or 9999),
-        )
-    )
+    # -------- 🔥 NOVO SISTEMA DE ORDENAÇÃO ----------
+    if sort_by == "rating":
+        # ordenar por nota (maior para menor)
+        filtered.sort(key=lambda x: float(x.get("rating") or 0), reverse=True)
+    else:
+        # padrão: ordenar por distância
+        filtered.sort(key=lambda x: float(x.get("distance_km") or 9999))
+    # ------------------------------------------------
 
     limited = filtered[:40]
 
@@ -202,9 +195,6 @@ def api_search():
 
 @app.route("/api/photo")
 def api_photo():
-    """
-    Proxy de foto do Google Places.
-    """
     ref = request.args.get("ref")
     maxwidth = request.args.get("maxwidth", "400")
     if not ref:
@@ -217,7 +207,6 @@ def api_photo():
         "key": GOOGLE_API_KEY,
     }
 
-    # ---- FINAL QUE ESTAVA FALTANDO ----
     try:
         resp = requests.get(photo_url, params=params, stream=True, timeout=10)
     except requests.RequestException:
@@ -226,11 +215,11 @@ def api_photo():
     if resp.status_code != 200:
         return abort(resp.status_code)
 
-    return Response(resp.iter_content(chunk_size=4096),
-                    content_type=resp.headers.get("Content-Type"))
-    # -----------------------------------
+    return Response(
+        resp.iter_content(chunk_size=4096),
+        content_type=resp.headers.get("Content-Type")
+    )
 
 
-# --------- Execução ---------
 if __name__ == "__main__":
     app.run(debug=True, host="0.0.0.0", port=5000)
